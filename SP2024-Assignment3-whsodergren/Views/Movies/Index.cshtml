@@ -1,0 +1,61 @@
+﻿@model IEnumerable<SP2024_Assignment3_whsodergren.Models.Movie>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Movie Page</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table id="movieTable" class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Genre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.YearOfRelease)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IMDBHyperlink)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                <a>@Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Genre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.YearOfRelease)
+            </td>
+            <td>
+                <a href="@item.IMDBHyperlink" target="_blank">IMBD Page</a>
+            </td>
+            <td>
+                @if (item.MovieImage != null && item.MovieImage.Length != 0)
+                {
+                    <img height="150" src="@Url.Action("GetMoviePhoto", "Movies", new {item.Id})" />
+                }
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+

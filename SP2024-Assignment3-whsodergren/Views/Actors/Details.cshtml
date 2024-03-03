@@ -1,0 +1,89 @@
+﻿@model SP2024_Assignment3_whsodergren.Models.ActorDetailsVM
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Actor</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.actor.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.actor.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.actor.ActorImage)
+        </dt>
+        <dd class="col-sm-10">
+            @if (Model.actor.ActorImage != null && Model.actor.ActorImage.Length != 0)
+            {
+                <img height="150" src="@Url.Action("GetActorPhoto", "Actors", new {Model.actor.Id})" />
+            }
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.actor.Gender)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.actor.Gender)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.actor.Age)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.actor.Age)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.actor.IMDBHyperlink)
+        </dt>
+        <dd class = "col-sm-10">
+            <a href="@Html.DisplayFor(model => model.actor.IMDBHyperlink)" target="_blank">IMBD Page</a>
+        </dd>
+        <dt class="col-sm-2">
+            Sentiment
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Sentiment)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.actor.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
+<br />
+
+<table id="actorRedditTable" class="table">
+    <thead>
+        <tr>
+            <th>
+                Reddit Post
+            </th>
+            <th>
+                Post Sentiment
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var post in Model.RedditPosts)
+        {
+            <tr>
+                <td>
+                    @post.Text
+                </td>
+                <td>
+                    @post.Sentiment.ToString("F2") @Helper.GetSentimentDescription(post.Sentiment)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts
+{
+    <script>let table = new DataTable('#actorRedditTable');</script>
+}

@@ -1,0 +1,90 @@
+﻿@model SP2024_Assignment3_whsodergren.Models.MovieDetailsVM
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Movie</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.movie.Title)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.movie.Title)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.movie.MovieImage)
+        </dt>
+        <dd class="col-sm-10">
+            @if (Model.movie.MovieImage != null && Model.movie.MovieImage.Length != 0)
+            {
+                <img height="150" src="@Url.Action("GetMoviePhoto", "Movies", new {Model.movie.Id})" />
+            }
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.movie.Genre)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.movie.Genre)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.movie.YearOfRelease)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.movie.YearOfRelease)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.movie.IMDBHyperlink)
+        </dt>
+        <dd class = "col-sm-10">
+            <a href="@Html.DisplayFor(model => model.movie.IMDBHyperlink)" target="_blank">IMBD Page</a>
+        </dd>
+        <dt class="col-sm-2">
+            Sentiment
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Sentiment)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.movie.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
+
+<br />
+
+<table id="movieRedditTable" class="table">
+    <thead>
+        <tr>
+            <th>
+                Reddit Post
+            </th>
+            <th>
+                Post Sentiment
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var post in Model.RedditPosts)
+        {
+            <tr>
+                <td>
+                    @post.Text
+                </td>
+                <td>
+                    @post.Sentiment.ToString("F2") @Helper.GetSentimentDescription(post.Sentiment)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts 
+{
+    <script>let table = new DataTable('#movieRedditTable');</script>
+}
