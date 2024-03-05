@@ -17,5 +17,6 @@ namespace SP2024_Assignment3_whsodergren.Models
         [DataType(DataType.Upload)]
         [DisplayName("Actor Image")]
         public byte[]? ActorImage { get; set; }
+
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SP2024_Assignment3_whsodergren.Migrations
 {
     /// <inheritdoc />
-    public partial class addedBackStuff : Migration
+    public partial class undoingTest : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,7 +20,8 @@ namespace SP2024_Assignment3_whsodergren.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Age = table.Column<int>(type: "int", nullable: false),
-                    IMDBHyperlink = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    IMDBHyperlink = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ActorImage = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -75,7 +76,8 @@ namespace SP2024_Assignment3_whsodergren.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Genre = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     YearOfRelease = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IMDBHyperlink = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    IMDBHyperlink = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MovieImage = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
                 },
                 constraints: table =>
                 {

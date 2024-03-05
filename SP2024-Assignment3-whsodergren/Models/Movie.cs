@@ -19,5 +19,6 @@ namespace SP2024_Assignment3_whsodergren.Models
         [DisplayName("Movie Image")]
         public byte[]? MovieImage { get; set; }
 
+
     }
 }
