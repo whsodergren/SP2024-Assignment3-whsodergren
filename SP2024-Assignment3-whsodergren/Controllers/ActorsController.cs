@@ -61,55 +61,25 @@ namespace SP2024_Assignment3_whsodergren.Controllers
             ActorDetailsVM actorDetailsVM = new ActorDetailsVM();
             actorDetailsVM.actor = actor;
 
-            var queryText = actor.Name;
-            var json = "";
-            using (WebClient wc = new WebClient())
-            {
-                //fake like you are a "real" web browser
-                wc.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
-                json = wc.DownloadString("https://www.reddit.com/search.json?limit=100&q=" + HttpUtility.UrlEncode(queryText));
-            }
-            var textToExamine = new List<string>();
-            JsonDocument doc = JsonDocument.Parse(json);
+            List<string> textToExamine = await SearchWikipediaAsync(actor.Name);
 
-            // Navigate to the "data" object
-            JsonElement dataElement = doc.RootElement.GetProperty("data");
-
-            // Navigate to the "children" array
-            JsonElement childrenElement = dataElement.GetProperty("children");
-            foreach (JsonElement child in childrenElement.EnumerateArray())
-            {
-                if (child.TryGetProperty("data", out JsonElement data))
-                {
-                    if (data.TryGetProperty("selftext", out JsonElement selftext))
-                    {
-                        string selftextValue = selftext.GetString();
-                        if (!string.IsNullOrEmpty(selftextValue)) { textToExamine.Add(selftextValue); }
-                        else if (data.TryGetProperty("title", out JsonElement title)) //use title if text is empty
-                        {
-                            string titleValue = title.GetString();
-                            if (!string.IsNullOrEmpty(titleValue)) { textToExamine.Add(titleValue); }
-                        }
-                    }
-                }
-            }
 
             var analyzer = new SentimentIntensityAnalyzer();
             int validResults = 0;
             double resultsTotal = 0;
-            List<RedditPost> redditPosts = new List<RedditPost>();
+            List<WikiPost> wikiPosts = new List<WikiPost>();
 
             foreach (string textValue in textToExamine)
             {
-                var results = analyzer.PolarityScores(textValue);
+                var results = analyzer.PolarityScores(textValue.Substring(0, textValue.Length < 1000 ? textValue.Length : 1000));
                 if (results.Compound != 0)
                 {
                     resultsTotal += results.Compound;
                     validResults++;
 
-                    redditPosts.Add(new RedditPost
+                    wikiPosts.Add(new WikiPost
                     {
-                        Text = textValue,
+                        Text = textValue.Substring(0, textValue.Length < 1000 ? textValue.Length : 1000),
                         Sentiment = Math.Round(results.Compound, 2)
                     });
                 }
@@ -118,7 +88,7 @@ namespace SP2024_Assignment3_whsodergren.Controllers
             double avgResult = Math.Round(resultsTotal / validResults, 2);
             actorDetailsVM.Sentiment = avgResult.ToString() + ", " + GetSentimentDescription(avgResult);
 
-            actorDetailsVM.RedditPosts = redditPosts;
+            actorDetailsVM.WikiPosts = wikiPosts;
 
             return View(actorDetailsVM);
 
@@ -140,6 +110,49 @@ namespace SP2024_Assignment3_whsodergren.Controllers
                     return "Very Negative";
             }
 
+        }
+
+        public static readonly HttpClient client = new HttpClient();
+        public static async Task<List<string>> SearchWikipediaAsync(string searchQuery)
+        {
+            string baseUrl = "https://en.wikipedia.org/w/api.php";
+            string url = $"{baseUrl}?action=query&list=search&srlimit=100&srsearch={Uri.EscapeDataString(searchQuery)}&format=json";
+
+            List<string> textToExamine = new List<string>();
+
+            try
+            {
+                //Ask WikiPedia for a list of pages that relate to the query
+                HttpResponseMessage response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+
+                var jsonDocument = JsonDocument.Parse(responseBody);
+                var searchResults = jsonDocument.RootElement.GetProperty("query").GetProperty("search");
+
+                foreach (var item in searchResults.EnumerateArray())
+                {
+                    var pageId = item.GetProperty("pageid").ToString();
+                    //Ask WikiPedia for the text of each page in the query results
+                    string pageUrl = $"{baseUrl}?action=query&pageids={pageId}&prop=extracts&explaintext&format=json";
+
+                    HttpResponseMessage pageResponse = await client.GetAsync(pageUrl);
+                    pageResponse.EnsureSuccessStatusCode();
+                    string pageResponseBody = await pageResponse.Content.ReadAsStringAsync();
+
+                    var jsonPageDocument = JsonDocument.Parse(pageResponseBody);
+                    var pageContent = jsonPageDocument.RootElement.GetProperty("query").GetProperty("pages").GetProperty(pageId).GetProperty("extract").GetString();
+
+                    textToExamine.Add(pageContent);
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine("\nException Caught!");
+                Console.WriteLine("Message :{0} ", e.Message);
+            }
+
+            return textToExamine;
         }
 
         // GET: Actors/Create

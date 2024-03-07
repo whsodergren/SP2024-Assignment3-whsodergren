@@ -5,7 +5,7 @@
         public Movie movie { get; set; }
         public List<Actor> actors { get; set; }
         public string Sentiment { get; set; }
-        public List<RedditPost> RedditPosts { get; set; }
+        public List<WikiPost> WikiPosts { get; set; }
 
 
     }

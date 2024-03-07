@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SP2024_Assignment3_whsodergren.Migrations
 {
     /// <inheritdoc />
-    public partial class undoingTest : Migration
+    public partial class newServer : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
