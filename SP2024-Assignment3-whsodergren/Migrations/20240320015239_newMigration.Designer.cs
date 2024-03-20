@@ -12,8 +12,8 @@ using SP2024_Assignment3_whsodergren.Data;
 namespace SP2024_Assignment3_whsodergren.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240307202522_finalMigrationTest")]
-    partial class finalMigrationTest
+    [Migration("20240320015239_newMigration")]
+    partial class newMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
